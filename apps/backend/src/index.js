@@ -1,10 +1,13 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const redis = require("redis")
 const dotenv = require("dotenv");
 const people = require("./data.json");
 const Person = require("./model/person");
 
 const app = express();
+const client = redis.createClient(6379);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -26,8 +29,10 @@ app.get("/", (req, res) => {
 
 app.get("/people", async (req, res) => {
   try {
-    const foundPeople = await Person.find();
-    res.status(200).json(foundPeople);
+    const foundPeople = await client.get('people') || await Person.find();
+    const numFound = foundPeople.length;
+    client.set("people", numFound);
+    res.status(200).json(numFound);
   } catch(err) {
     return res.sendStatus(500);
   }
@@ -53,6 +58,7 @@ app.delete("/people", async (req, res) => {
     });
 });
 
-app.listen(3000, () => {
+app.listen(3000, async () => {
+  await client.connect();
   console.log("server listening on port 3000");
 });
