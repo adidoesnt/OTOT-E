@@ -2,5 +2,11 @@
   "name": "otot_e",
   "version": "1.0.0",
   "main": "index.js",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }, 
+  "scripts": {
+    "backend-dev": "nodemon apps/backend/src/index.js"
+  }
 }
