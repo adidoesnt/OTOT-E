@@ -32,11 +32,10 @@ app.get("/people", async (req, res) => {
     let data = await client.get("people");
     if (data === null) {
       const foundPeople = await Person.find();
-      data = foundPeople.length;
+      data = JSON.stringify(foundPeople);
       client.set("people", data);
     }
-    const numFound = +data;
-    return res.status(200).json(numFound);
+    return res.status(200).json(JSON.parse(data));
   } catch (err) {
     return res.sendStatus(500);
   }
